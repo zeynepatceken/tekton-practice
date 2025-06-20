@@ -1,0 +1,83 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: cd-pipeline
+spec:
+  params:
+    - name: repo-url
+      type: string
+    - name: build-image 
+    - name: branch
+      type: string
+      default: "main"
+
+  workspaces:
+    - name: pipeline-workspace
+
+  tasks:
+    - name: init
+      taskRef:
+        name: cleanup
+      workspaces:
+        - name: source
+          workspace: pipeline-workspace
+
+    - name: clone
+      taskRef:
+        name: git-clone
+      params:
+        - name: url
+          value: "$(params.repo-url)"
+        - name: branch
+          value: "$(params.branch)"
+      workspaces:
+        - name: output  
+          workspace: pipeline-workspace
+      runAfter:
+        - init  
+
+    - name: lint
+      workspaces:
+        - name: source
+          workspace: pipeline-workspace
+      taskRef:
+        name: checkstyle
+      params:
+        - name: message
+          value: "Linting code with CheckStyle..."
+      runAfter:
+        - clone
+
+    - name: tests
+      workspaces:
+        - name: source
+          workspace: pipeline-workspace
+      taskRef:
+        name: run-tests
+      runAfter:
+        - lint
+
+
+    - name: build
+      workspaces:
+        - name: source
+          workspace: pipeline-workspace
+      taskRef:
+        name: buildah
+        kind: ClusterTask
+      params:
+      - name: IMAGE
+        value: "$(params.build-image)"
+      - name: DOCKERFILE
+        value: "./Dockerfile"
+      runAfter:
+        - tests
+
+    - name: deploy
+      taskRef:
+        name: echo
+      params:
+        - name: message
+          value: "Deploying $(params.branch) branch of $(params.repo-url) ..."
+      runAfter:
+        - build

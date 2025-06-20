@@ -1,0 +1,10 @@
+{
+    "java.configuration.updateBuildConfiguration": "interactive",
+    "java.project.sourcePaths": [
+        "src/main/java",
+        "src/test/java",
+        "target/generated-test-sources/test-annotations",
+        "target/generated-sources/annotations"
+    ],
+    "java.project.referencedLibraries": []
+}

@@ -1,0 +1,33 @@
+# Git
+.git
+.gitignore
+
+# IDE
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+
+# Compiled files
+target/
+!target/*.jar
+
+# Logs
+logs/
+*.log
+
+# OS specific
+.DS_Store
+
+# Test reports
+surefire-reports/
+test-output/
+
+# Maven
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+# Documentation
+README.md
+HELP.md
